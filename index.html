@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="კოსმოსი">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>კოსმოსური აკადემია</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;700;800&display=swap">
+<style>
+:root{--bg:#070b1f;--fg:#eef1ff;--mut:#9aa3c7;--acc:#ffb84d;--ok:#3ddc97;--bad:#ff6b6b;--card:#121a3d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:"Noto Sans Georgian",system-ui,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);display:flex;justify-content:space-between;padding:12px 16px;font-weight:700;pointer-events:none}
+#hud span{background:rgba(18,26,61,.8);padding:6px 12px;border-radius:20px}
+#panel{position:fixed;left:0;right:0;bottom:0;max-height:52%;overflow:auto;background:var(--card);border-radius:20px 20px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateY(105%);transition:transform .35s ease;box-shadow:0 -8px 30px rgba(0,0,0,.5)}
+#panel.open{transform:none}
+#panel h2{margin:0 0 4px;font-size:24px}
+#panel .st{color:var(--mut);font-size:13px;margin-bottom:10px}
+#panel p{margin:0 0 12px;line-height:1.5;font-size:15px;max-width:60ch}
+#panel .q{font-weight:700;margin:6px 0 8px}
+.opt{display:block;width:100%;text-align:left;margin:0 0 8px;padding:12px 14px;border-radius:12px;border:2px solid #2b3670;background:#0d1433;color:var(--fg);font:inherit;font-size:15px}
+.opt.ok{border-color:var(--ok);background:#12382c}
+.opt.bad{border-color:var(--bad);background:#3b1a22}
+#fb{font-size:14px;color:var(--mut);margin-top:4px}
+#tm{height:8px;border-radius:4px;background:#0d1433;margin:0 0 12px;overflow:hidden}
+#tm i{display:block;height:100%;width:100%;background:var(--ok)}
+#tl{float:right;font-weight:800;font-size:18px;margin-left:10px;color:var(--acc)}
+#close{position:absolute;right:12px;top:10px;background:none;border:0;color:var(--mut);font-size:26px;padding:6px}
+#intro{position:fixed;inset:0;background:rgba(7,11,31,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+#intro h1{font-size:clamp(30px,8vw,52px);margin:0 0 10px;font-weight:800}
+#intro p{color:var(--mut);max-width:34ch;line-height:1.5;margin:0 0 24px}
+#go{background:var(--acc);color:#1a1200;border:0;border-radius:30px;padding:16px 34px;font:inherit;font-weight:800;font-size:19px}
+#cd{position:fixed;inset:0;display:none;align-items:center;justify-content:center;font-size:30vw;font-weight:800;color:var(--acc);pointer-events:none}
+#tip{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);text-align:center;color:var(--mut);font-size:14px;pointer-events:none}
+#intro{overflow:auto}
+#how{max-width:340px;width:100%;margin:18px 0 0;text-align:left;background:rgba(18,26,61,.8);border-radius:14px;padding:4px 14px}
+#how summary{cursor:pointer;font-weight:700;padding:10px 0;text-align:center;color:var(--acc)}
+#how h3{margin:10px 0 4px;font-size:15px}
+#how ol{margin:0 0 10px;padding-left:20px;color:var(--mut);font-size:14px;line-height:1.55}
+#ver{margin-top:18px;color:var(--mut);font-size:13px;opacity:.8}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"><span id="sc">⭐ 0</span><span id="vs">🪐 0/8</span></div>
+<div id="tip"></div>
+<div id="cd"></div>
+<div id="panel"><button id="close" aria-label="დახურვა">×</button><div id="pc"></div></div>
+<div id="intro">
+  <h1>კოსმოსური აკადემია</h1>
+  <p>გაფრინდი რაკეტით მზის სისტემაში, დაეშვი პლანეტებზე, შეისწავლე ისინი და უპასუხე კითხვებს. თითო კითხვაზე 10 წამი გაქვს.</p>
+  <button id="go">აფრენა 🚀</button>
+  <details id="how">
+    <summary>📲 როგორ დავაყენო აპად</summary>
+    <h3>iPhone (Safari)</h3>
+    <ol>
+      <li>გახსენი საიტი Safari-ში.</li>
+      <li>დააჭირე Share ღილაკს (კვადრატი ზემოთ ისრით).</li>
+      <li>აირჩიე „Add to Home Screen“.</li>
+      <li>დააჭირე „Add“. იკონა მთავარ ეკრანზე გამოჩნდება.</li>
+    </ol>
+    <h3>Android (Chrome)</h3>
+    <ol>
+      <li>გახსენი საიტი Chrome-ში.</li>
+      <li>დააჭირე სამ წერტილს ⋮ ზედა მარჯვენა კუთხეში.</li>
+      <li>აირჩიე „Install app“ ან „Add to Home screen“.</li>
+      <li>დაადასტურე. აპი მთავარ ეკრანზე დაემატება.</li>
+    </ol>
+  </details>
+  <div id="ver">v0.1.0</div>
+</div>
+<script>
+const P=[
+{n:'მერკური',c:'#b9b3ab',r:.13,s:5,au:.39,f:'მზესთან ყველაზე ახლოს და ყველაზე პატარაა. მზეს 88 დედამიწის დღეში შემოუვლის, ამიტომ მისი წელიწადი სულ რამდენიმე თვეა.',q:'რამდენ დღეში შემოუვლის მერკური მზეს?',o:['88 დღეში','365 დღეში','30 დღეში'],a:0,e:'მერკური მზესთან ახლოსაა და სწრაფად მოძრაობს.'},
+{n:'ვენერა',c:'#e8c27a',r:.2,s:8,au:.72,f:'ყველაზე ცხელი პლანეტაა, დაახლოებით 465°C. სქელი ატმოსფერო სითბოს იჭერს, ბრუნავს კი სხვა პლანეტებისგან განსხვავებით საპირისპირო მიმართულებით.',q:'რომელია მზის სისტემის ყველაზე ცხელი პლანეტა?',o:['მერკური','ვენერა','მარსი'],a:1,e:'მერკური უფრო ახლოსაა მზესთან, მაგრამ ვენერას სქელი ატმოსფერო სითბოს იჭერს.'},
+{n:'დედამიწა',c:'#4a90e2',r:.28,s:8.5,au:1,f:'ჩვენი სახლი და ერთადერთი ცნობილი სიცოცხლიანი პლანეტა. ზედაპირის დაახლოებით 71% წყალია, ერთი ბუნებრივი თანამგზავრი, მთვარე, კი აქვს.',q:'რამდენი ბუნებრივი თანამგზავრი აქვს დედამიწას?',o:['არცერთი','ერთი','ორი'],a:1,e:'ეს არის მთვარე.'},
+{n:'მარსი',c:'#d9603b',r:.37,s:6.5,au:1.52,f:'წითელია, რადგან ზედაპირზე რკინის ოქსიდია, ანუ ჟანგი. იქ არის ოლიმპოს მთა, მზის სისტემის ყველაზე მაღალი ვულკანი, დაახლოებით 22 კმ სიმაღლის.',q:'რატომ არის მარსი წითელი?',o:['მასზე ცეცხლი ჯერ კიდევ ანთია','ზედაპირზე რკინის ჟანგია','წითელი მცენარეები ზრდის'],a:1,e:'რკინის ოქსიდი ანუ ჟანგი წითელ ფერს აძლევს.'},
+{n:'იუპიტერი',c:'#d8a77a',r:.5,s:17,au:5.2,f:'ყველაზე დიდი პლანეტაა, მასში დაახლოებით 1300 დედამიწა ჩაეტეოდა. დიდი წითელი ლაქა საუკუნეების განმავლობაში მძვინვარე გიგანტური ქარიშხალია.',q:'რომელია მზის სისტემის უდიდესი პლანეტა?',o:['სატურნი','იუპიტერი','ნეპტუნი'],a:1,e:'იუპიტერი დანარჩენ პლანეტებს ერთად აღებულსაც აღემატება მასით.'},
+{n:'სატურნი',c:'#e6d49a',r:.62,s:15,ring:1,au:9.58,f:'რგოლები ყინულის და ქვის უთვალავი ნატეხისგან შედგება. სატურნის საშუალო სიმკვრივე წყალზე ნაკლებია, ამიტომ საკმარისად დიდ აუზში ის იტივტივებდა.',q:'რისგან შედგება სატურნის რგოლები?',o:['ყინულისა და ქვისგან','ცხელი აირისგან','ლითონისგან'],a:0,e:'ნატეხები ქვიშის მარცვლიდან სახლის ზომამდეა.'},
+{n:'ურანი',c:'#8fe0e6',r:.74,s:11,au:19.2,f:'გვერდზე გადაწოლილი პლანეტაა: მისი ღერძი დაახლოებით 98 გრადუსითაა დახრილი და ის მზის გარშემო თითქოს გორავს. ერთი წელიწადი 84 დედამიწის წელს გრძელდება.',q:'რით არის უჩვეულო ურანის ბრუნვა?',o:['სულ არ ბრუნავს','გვერდზე გადაწოლილი ბრუნავს','მხოლოდ უკან ბრუნავს'],a:1,e:'ალბათ უძველესმა დიდმა შეჯახებამ გადახარა.'},
+{n:'ნეპტუნი',c:'#4d6fe8',r:.86,s:11,au:30.05,f:'ყველაზე შორეული პლანეტაა. მასზე ქარი საათში დაახლოებით 2000 კმ-მდე სიჩქარეს აღწევს, ერთი წელიწადი კი თითქმის 165 დედამიწის წელია.',q:'რომელი პლანეტაა მზიდან ყველაზე შორს?',o:['ურანი','სატურნი','ნეპტუნი'],a:2,e:'მზიდან ის დაახლოებით 30-ჯერ უფრო შორსაა, ვიდრე დედამიწა.'}
+];
+const cv=document.getElementById('c'),x=cv.getContext('2d');
+let W,H,cx,cy,R,dpr=Math.min(devicePixelRatio||1,2);
+const stars=[...Array(160)].map(()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.5+.3,p:Math.random()*6}));
+function resize(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);cx=W/2;cy=H*.42;R=Math.min(W/2-12,H*.4)}
+addEventListener('resize',resize);resize();
+const X=[
+[{q:'რამდენად დიდია მერკური დედამიწასთან შედარებით?',o:['დედამიწაზე დიდია','დიამეტრით დაახლოებით 40%-ია','დედამიწის ტოლია'],a:1,e:'მერკური მზის სისტემის უმცირესი პლანეტაა.'},
+ {q:'რატომ არის მერკურზე დღისით ძალიან ცხელი, ღამით კი ძალიან ცივი?',o:['თითქმის არ აქვს ატმოსფერო','მუდმივად ქარია','წყლით არის დაფარული'],a:0,e:'ატმოსფერო სითბოს ვერ იკავებს: დღისით დაახლოებით 430°C, ღამით დაახლოებით -180°C.'}],
+[{q:'როგორ ბრუნავს ვენერა თავისი ღერძის გარშემო?',o:['ისევე, როგორც დედამიწა','საპირისპირო მიმართულებით','საერთოდ არ ბრუნავს'],a:1,e:'ვენერაზე მზე დასავლეთიდან ამოდის.'},
+ {q:'რისგან შედგება ვენერას სქელი ატმოსფერო ძირითადად?',o:['ჟანგბადისგან','ნახშირორჟანგისგან','წყალბადისგან'],a:1,e:'ნახშირორჟანგი ძლიერ სათბურის ეფექტს ქმნის.'}],
+[{q:'რატომ იცვლება დედამიწაზე წელიწადის დროები?',o:['ღერძის დახრის გამო','მზესთან მანძილის ცვლილების გამო','მთვარის გამო'],a:0,e:'დედამიწის ღერძი დაახლოებით 23,5 გრადუსითაა დახრილი.'},
+ {q:'რამდენ დროში შემოუვლის დედამიწა მზეს ერთხელ?',o:['დაახლოებით ერთ წელიწადში','ერთ თვეში','24 საათში'],a:0,e:'24 საათში დედამიწა თავის ღერძის გარშემო ბრუნავს.'}],
+[{q:'რამდენი მთვარე აქვს მარსს?',o:['ორი პატარა','არცერთი','ათი'],a:0,e:'მათ ფობოსი და დეიმოსი ჰქვია.'},
+ {q:'ვინ იკვლევს ამჟამად მარსის ზედაპირს?',o:['რობოტი როვერები','ასტრონავტები','სამხედრო ტანკები'],a:0,e:'ადამიანი მარსზე ჯერ არ დაშვებულა.'}],
+[{q:'რა არის იუპიტერის დიდი წითელი ლაქა?',o:['ვულკანი','გიგანტური ქარიშხალი','ოკეანე'],a:1,e:'ეს ქარიშხალი დედამიწაზე დიდია.'},
+ {q:'რისგან შედგება იუპიტერი ძირითადად?',o:['წყალბადისა და ჰელიუმისგან','ქვისა და ლითონისგან','ყინულისგან'],a:0,e:'ის გაზის გიგანტია და მყარი ზედაპირი არ აქვს.'}],
+[{q:'რომელი პლანეტა იტივტივებდა საკმარისად დიდ აუზში?',o:['სატურნი','მარსი','დედამიწა'],a:0,e:'სატურნი ძირითადად წყალბადისა და ჰელიუმისგანაა და მისი სიმკვრივე წყალზე ნაკლებია.'},
+ {q:'როგორ ჰქვია სატურნის უდიდეს მთვარეს?',o:['ტიტანი','ფობოსი','ევროპა'],a:0,e:'ტიტანს სქელი ატმოსფერო აქვს.'}],
+[{q:'როგორი ფერისაა ურანი?',o:['მწვანე-ცისფერი','წითელი','ყვითელი'],a:0,e:'ფერს ატმოსფეროში არსებული მეთანი ქმნის.'},
+ {q:'ვინ აღმოაჩინა ურანი ტელესკოპით 1781 წელს?',o:['უილიამ ჰერშელმა','გალილეო გალილეიმ','ნილ არმსტრონგმა'],a:0,e:'ის პირველი პლანეტა იყო, რომელიც ტელესკოპით აღმოაჩინეს.'}],
+[{q:'რით იყო განსაკუთრებული ნეპტუნის აღმოჩენა?',o:['ჯერ მათემატიკურად იწინასწარმეტყველეს','შემთხვევით იპოვეს სკოლაში','თვალით დაინახეს'],a:0,e:'ურანის ორბიტის გადახრებმა აჩვენა, რომ მის გარეთ კიდევ ერთი დიდი მასა მოქმედებს. 1846 წელს ნახეს.'},
+ {q:'რამდენი ხანი გრძელდება ნეპტუნის ერთი წელიწადი?',o:['დაახლოებით 165 დედამიწის წელი','12 დედამიწის წელი','1000 დედამიწის წელი'],a:0,e:'ის მზისგან ძალიან შორსაა, ამიტომ მისი ორბიტა ძალიან გრძელია.'}]
+];
+const visits={};
+function pickQ(i){const l=[{q:P[i].q,o:P[i].o,a:P[i].a,e:P[i].e}].concat(X[i]);const n=visits[i]||0;visits[i]=n+1;return l[n%l.length]}
+P.forEach((p,i)=>{p.a0=Math.random()*6.28;p.w=.5/(1+i*.8)});
+const ship={x:0,y:0,vx:0,vy:0,ang:-1.57,mode:'dock',at:2,to:null,sp:0,burn:0};
+const parts=[];let score=0,seen=new Set(),started=false,answered=false;
+const $=id=>document.getElementById(id);
+function pos(p){const r=p.r*R;return[cx+Math.cos(p.a0)*r,cy+Math.sin(p.a0)*r]}
+function tip(t){$('tip').textContent=t}
+function hud(){$('sc').textContent='⭐ '+score;$('vs').textContent='🪐 '+seen.size+'/8'}
+function burst(px,py,n,col){for(let i=0;i<n;i++){const a=Math.random()*6.28,s=30+Math.random()*90;parts.push({x:px,y:py,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,c:col})}}
+$('go').onclick=()=>{$('intro').style.display='none';const cd=$('cd');cd.style.display='flex';let n=3;cd.textContent=n;
+ const t=setInterval(()=>{n--;if(n>0){cd.textContent=n}else{clearInterval(t);cd.textContent='🚀';ship.burn=1;burst(ship.x,ship.y,40,'#ffb84d');
+ setTimeout(()=>{cd.style.display='none';started=true;tip('შეეხე პლანეტას და გაფრინდი მასთან')},700)}},900)};
+cv.addEventListener('pointerdown',e=>{if(!started||ship.mode==='fly')return;
+ let best=-1,bd=1e9;P.forEach((p,i)=>{const[px,py]=pos(p);const d=Math.hypot(e.clientX-px,e.clientY-py);if(d<Math.max(p.s+16,26)&&d<bd){bd=d;best=i}});
+ if(best<0||best===ship.at)return;closePanel();ship.to=best;ship.mode='fly';ship.sp=0;ship.burn=1;tip('მიფრინავ: '+P[best].n+'...')});
+function closePanel(){stopTimer();$('panel').classList.remove('open')}
+$('close').onclick=closePanel;
+function openPanel(i){const p=Object.assign({},P[i],pickQ(i));answered=false;
+ const dist=(p.au*149.6).toFixed(0),min=(p.au*8.32).toFixed(1);
+ $('pc').innerHTML='<h2>'+p.n+'</h2><div class="st">მზიდან: '+dist+' მლნ კმ · სინათლე აქ მოდის '+min+' წუთში</div><p>'+p.f+'</p><div id="tm"><i></i></div><div class="q"><span id="tl">10</span>'+p.q+'</div>'+
+ p.o.map((o,k)=>'<button class="opt" data-k="'+k+'">'+o+'</button>').join('')+'<div id="fb"></div>';
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(answered)return;answered=true;stopTimer();const k=+b.dataset.k;
+  if(k===p.a){b.classList.add('ok');score++;$('fb').textContent='სწორია! +1 ⭐ '+p.e;burst(ship.x,ship.y,30,'#3ddc97')}
+  else{b.classList.add('bad');document.querySelectorAll('.opt')[p.a].classList.add('ok');$('fb').textContent='თითქმის. '+p.e}
+  hud();tip('აირჩიე შემდეგი პლანეტა')});
+ $('panel').classList.add('open');startTimer(p)}
+let tmr=null;
+function stopTimer(){if(tmr){clearInterval(tmr);tmr=null}}
+function startTimer(p){stopTimer();const t0=Date.now(),bar=document.querySelector('#tm i'),lb=$('tl');
+ tmr=setInterval(()=>{const left=Math.max(0,10-(Date.now()-t0)/1000);bar.style.width=left*10+'%';lb.textContent=Math.ceil(left);
+  if(left<4)bar.style.background='#ff6b6b';
+  if(left<=0){stopTimer();if(answered)return;answered=true;document.querySelectorAll('.opt')[p.a].classList.add('ok');$('fb').textContent='⏰ დრო ამოიწურა! '+p.e;tip('აირჩიე შემდეგი პლანეტა')}},100)}
+let last=performance.now();
+function frame(t){const dt=Math.min((t-last)/1000,.05);last=t;
+ P.forEach(p=>p.a0+=p.w*dt*.6);
+ const[ex,ey]=pos(P[ship.at]);
+ if(ship.mode==='dock'){const[px,py]=pos(P[ship.at]);ship.x=px;ship.y=py-P[ship.at].s-9;ship.ang=-1.57;ship.vx=ship.vy=0}
+ else{const[tx,ty]=pos(P[ship.to]);const dx=tx-ship.x,dy=ty-(ship.y),d=Math.hypot(dx,dy);const stop=P[ship.to].s+10;
+  ship.sp=Math.min(ship.sp+260*dt,Math.max(60,d*1.8),340);
+  const tvx=dx/d*ship.sp,tvy=dy/d*ship.sp;ship.vx+=(tvx-ship.vx)*Math.min(1,4*dt);ship.vy+=(tvy-ship.vy)*Math.min(1,4*dt);
+  ship.x+=ship.vx*dt;ship.y+=ship.vy*dt;ship.ang=Math.atan2(ship.vy,ship.vx);ship.burn=1;
+  if(d<stop+2){ship.mode='dock';ship.at=ship.to;seen.add(ship.at);hud();burst(tx,ty,25,'#fff');openPanel(ship.at);tip('')}}
+ if(ship.burn>0&&Math.random()<.9)parts.push({x:ship.x-Math.cos(ship.ang)*8,y:ship.y-Math.sin(ship.ang)*8,vx:-Math.cos(ship.ang)*50+(Math.random()-.5)*20,vy:-Math.sin(ship.ang)*50+(Math.random()-.5)*20,l:.6,c:'#ffb84d'});
+ if(ship.mode==='dock')ship.burn=Math.max(0,ship.burn-dt*2);
+ // draw
+ x.fillStyle='#070b1f';x.fillRect(0,0,W,H);
+ stars.forEach(s=>{x.globalAlpha=.4+.6*Math.abs(Math.sin(t/900+s.p));x.fillStyle='#fff';x.fillRect(s.x*W,s.y*H,s.s,s.s)});x.globalAlpha=1;
+ const g=x.createRadialGradient(cx,cy,2,cx,cy,34);g.addColorStop(0,'#fff6c8');g.addColorStop(.4,'#ffb84d');g.addColorStop(1,'rgba(255,140,0,0)');
+ x.fillStyle=g;x.beginPath();x.arc(cx,cy,34,0,7);x.fill();
+ P.forEach((p,i)=>{x.strokeStyle='rgba(154,163,199,.18)';x.lineWidth=1;x.beginPath();x.arc(cx,cy,p.r*R,0,7);x.stroke()});
+ P.forEach((p,i)=>{const[px,py]=pos(p);
+  if(p.ring){x.save();x.translate(px,py);x.rotate(-.4);x.strokeStyle='rgba(230,212,154,.8)';x.lineWidth=2.5;x.beginPath();x.ellipse(0,0,p.s*1.9,p.s*.6,0,0,7);x.stroke();x.restore()}
+  const pg=x.createRadialGradient(px-p.s*.3,py-p.s*.3,1,px,py,p.s);pg.addColorStop(0,'#fff');pg.addColorStop(.25,p.c);pg.addColorStop(1,'#000');
+  x.fillStyle=pg;x.beginPath();x.arc(px,py,p.s,0,7);x.fill();
+  if(seen.has(i)){x.strokeStyle='#3ddc97';x.lineWidth=2;x.beginPath();x.arc(px,py,p.s+4,0,7);x.stroke()}
+  x.fillStyle='#cfd5f5';x.font='12px "Noto Sans Georgian",sans-serif';x.textAlign='center';x.fillText(p.n,px,py+p.s+16)});
+ for(let i=parts.length-1;i>=0;i--){const q=parts[i];q.l-=dt*1.4;if(q.l<=0){parts.splice(i,1);continue}q.x+=q.vx*dt;q.y+=q.vy*dt;x.globalAlpha=q.l;x.fillStyle=q.c;x.beginPath();x.arc(q.x,q.y,2.5*q.l+.5,0,7);x.fill()}x.globalAlpha=1;
+ x.save();x.translate(ship.x,ship.y);x.rotate(ship.ang+1.57);
+ if(ship.burn>0){x.fillStyle='#ffb84d';x.beginPath();x.moveTo(-3,7);x.lineTo(3,7);x.lineTo(0,13+Math.random()*7);x.fill()}
+ x.fillStyle='#eef1ff';x.beginPath();x.moveTo(0,-9);x.quadraticCurveTo(6,-2,4,7);x.lineTo(-4,7);x.quadraticCurveTo(-6,-2,0,-9);x.fill();
+ x.fillStyle='#ff6b6b';x.beginPath();x.moveTo(-4,3);x.lineTo(-8,9);x.lineTo(-4,7);x.fill();x.beginPath();x.moveTo(4,3);x.lineTo(8,9);x.lineTo(4,7);x.fill();
+ x.fillStyle='#4a90e2';x.beginPath();x.arc(0,-2,2,0,7);x.fill();x.restore();
+ requestAnimationFrame(frame)}
+hud();seen.add(2);hud();requestAnimationFrame(frame);
+</script>
+<script>
+if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
